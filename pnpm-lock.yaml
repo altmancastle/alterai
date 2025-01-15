@@ -71,6 +71,9 @@ importers:
 
   packages/docs:
     dependencies:
+      alter-ui:
+        specifier: link:package/alter-ui
+        version: link:package/alter-ui
       react:
         specifier: ^18.3.1
         version: 18.3.1
