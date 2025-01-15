@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { RippleAnimationConfig, RippleConfig, RippleRef } from "./ripple-ref";
 import { RippleRenderer } from "./ripple-renderer";
+import "./ripple.scss";
 
 export interface RippleProps {
   color: string;
