@@ -4,10 +4,10 @@ import { RippleRenderer } from "./ripple-renderer";
 import "./ripple.scss";
 
 export interface RippleProps {
-  color: string;
-  unbounded: boolean;
-  centered: boolean;
-  radius: number;
+  color?: string;
+  unbounded?: boolean;
+  centered?: boolean;
+  radius?: number;
   disabled: boolean;
   animation?: RippleAnimationConfig;
   terminateOnPointerUp?: boolean
@@ -112,6 +112,7 @@ export function useRipple(props: RippleProps) {
     }
     
     return {
+      triggerRef,
       getDisabled,
       setDisabled,
       setTrigger,
@@ -121,7 +122,7 @@ export function useRipple(props: RippleProps) {
       fadeOutAllNonPersistent,
       launch,
     }
-  }, [_disabled, animation, centered, color, disabled, radius, terminateOnPointerUp])
+  }, [_disabled, triggerRef, animation, centered, color, disabled, radius, terminateOnPointerUp])
 
 }
 

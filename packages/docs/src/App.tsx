@@ -1,12 +1,18 @@
 import { useState } from 'react'
+import { useRipple } from "alter-ui";
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
+
+  const { triggerRef } = useRipple({
+    disabled: false,
+    color: "#333"
+  })
 
   return (
     <>
-      <div>
+      <div ref={triggerRef}>
         测试
       </div>
       <h1>Vite + React</h1>
