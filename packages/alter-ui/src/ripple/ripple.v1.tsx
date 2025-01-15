@@ -17,7 +17,6 @@ export function useRipple(props: RippleProps) {
 
   const {
     color,
-    unbounded,
     centered,
     radius,
     animation,

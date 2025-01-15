@@ -56,7 +56,7 @@ export class RippleRenderer implements EventListenerObject {
   private _containerElement: HTMLElement;
 
   /** Element which triggers the ripple elements on mouse events. */
-  private _triggerElement: HTMLElement | null;
+  private _triggerElement: HTMLElement | null | undefined;
 
   /** Whether the pointer is currently down or not. */
   private _isPointerDown = false;
@@ -65,10 +65,10 @@ export class RippleRenderer implements EventListenerObject {
   private _activeRipples = new Set<RippleRef>();
 
   /** Latest non-persistent ripple that was triggered. */
-  private _mostRecentTransientRipple: RippleRef | null;
+  private _mostRecentTransientRipple: RippleRef | null | undefined;
 
   /** Time in milliseconds when the last touchstart event happened. */
-  private _lastTouchStartEvent: number;
+  private _lastTouchStartEvent: number | undefined;
 
   /** Whether pointer-up event listeners have been registered. */
   private _pointerUpEventsRegistered = false;
@@ -77,7 +77,7 @@ export class RippleRenderer implements EventListenerObject {
    * Cached dimensions of the ripple container. Set when the first
    * ripple is shown and cleared once no more ripples are visible.
    */
-  private _containerRect: DOMRect | null;
+  private _containerRect: DOMRect | null | undefined;
 
   constructor(private _target: RippleTarget, elementOrElementRef: HTMLElement) {
     // Only do anything if we're on the browser.

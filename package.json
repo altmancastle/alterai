@@ -12,6 +12,9 @@
   },
   "packageManager": "pnpm@9.10.0",
   "keywords": [],
+  "workspaces": [
+    "packages/*"
+  ],
   "author": "",
   "license": "ISC"
 }

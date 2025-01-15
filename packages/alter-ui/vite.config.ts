@@ -7,7 +7,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, "src/index.ts"),
       name: "alter-ui",
-      fileName: (format) => `my-react-lib.${format}.js`,
+      fileName: (format) => `alter-ui.${format}.js`,
     },
     rollupOptions: {
       external: ["react", "react-dom"],

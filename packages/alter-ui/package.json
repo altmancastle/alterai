@@ -3,6 +3,17 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/alter-ui.umd.cjs",
+  "module": "./dist/alter-ui.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/alter-ui.es.js",
+      "require": "./dist/alter-ui.umd.cjs"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
