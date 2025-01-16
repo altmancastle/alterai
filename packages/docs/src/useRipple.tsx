@@ -19,6 +19,8 @@ export type RippleConfig = {
 export interface RippleAnimationConfig {
   enterDuration?: number;
   exitDuration?: number;
+  enterTimingFunction?: string;
+  exitTimingFunction?: string;
 }
 
 export interface RippleTarget {
@@ -29,6 +31,8 @@ export interface RippleTarget {
 export const defaultRippleAnimationConfig = {
   enterDuration: 225,
   exitDuration: 150,
+  enterTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+  exitTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
 };
 
 const ignoreMouseEventsTimeout = 800;
@@ -71,13 +75,13 @@ export const useRipple = (target: RippleTarget) => {
   const createRipple = useCallback((event: MouseEvent | TouchEvent) => {
     if (target.rippleDisabled || !containerRef.current) return;
     const container = containerRef.current;
-    const { width, height, left, top } = container.getBoundingClientRect();
-    const size = Math.max(width, height);
-    const radius = target.rippleConfig.radius || size / 2;
+    const containerRect = container.getBoundingClientRect()
+    const { width, height, left, top } = containerRect;
     const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
     const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
-    const x = target.rippleConfig.centered ? width / 2 : clientX - left;
-    const y = target.rippleConfig.centered ? height / 2 : clientY - top;
+    const x = target.rippleConfig.centered ? width / 2 + left : clientX - left;
+    const y = target.rippleConfig.centered ? height / 2 + top : clientY - top;
+    const radius = target.rippleConfig.radius || distanceToFurthestCorner(x, y, container.getBoundingClientRect());
 
     const rippleElement = document.createElement('div');
     rippleElement.style.position = 'absolute';
@@ -88,7 +92,7 @@ export const useRipple = (target: RippleTarget) => {
     rippleElement.style.borderRadius = '50%';
     rippleElement.style.backgroundColor = target.rippleConfig.color || 'rgba(0, 0, 0, 0.3)';
     rippleElement.style.transform = 'scale(0)';
-    rippleElement.style.transition = `transform ${target.rippleConfig.animation?.enterDuration || defaultRippleAnimationConfig.enterDuration}ms, opacity ${target.rippleConfig.animation?.exitDuration || defaultRippleAnimationConfig.exitDuration}ms`;
+    rippleElement.style.transition = `transform ${target.rippleConfig.animation?.enterDuration || defaultRippleAnimationConfig.enterDuration}ms ${target.rippleConfig.animation?.enterTimingFunction || defaultRippleAnimationConfig.enterTimingFunction}, opacity ${target.rippleConfig.animation?.exitDuration || defaultRippleAnimationConfig.exitDuration}ms ${target.rippleConfig.animation?.exitTimingFunction || defaultRippleAnimationConfig.exitTimingFunction}`;
     rippleElement.style.overflow = 'hidden';
 
     container.appendChild(rippleElement);
@@ -158,3 +162,9 @@ export const useRipple = (target: RippleTarget) => {
     containerRef,
   };
 };
+
+function distanceToFurthestCorner(x: number, y: number, rect: DOMRect) {
+  const distX = Math.max(Math.abs(x - rect.left), Math.abs(x - rect.right));
+  const distY = Math.max(Math.abs(y - rect.top), Math.abs(y - rect.bottom));
+  return Math.sqrt(distX * distX + distY * distY);
+}
