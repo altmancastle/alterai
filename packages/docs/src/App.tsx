@@ -1,20 +1,13 @@
 import { useState } from 'react'
-import { useRipple } from "alter-ui";
 import './App.css'
+import { RippleButton } from './useRipple';
 
 function App() {
   const [count, setCount] = useState(0);
 
-  const { triggerRef } = useRipple({
-    disabled: false,
-    color: "#f8f8f8"
-  })
-
   return (
     <>
-      <div className='ripple' ref={triggerRef}>
-        测试
-      </div>
+      <RippleButton>测试测试</RippleButton>
       <h1>Vite + React</h1>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
