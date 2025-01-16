@@ -5,7 +5,8 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "pnpm run dev --filter docs"
+    "dev": "node scripts/dev.js",
+    "build": "node scripts/build.js"
   },
   "engines": {
     "node": ">=22.0.0"
@@ -16,5 +17,9 @@
     "packages/*"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "cross-spawn": "^7.0.6",
+    "lerna": "^8.1.9"
+  }
 }
