@@ -1,15 +1,22 @@
 import { useState } from 'react'
 import './App.css'
-import { RippleButton } from './useRipple';
+import { useRipple } from './useRipple';
 
 function App() {
   const [count, setCount] = useState(0);
 
+  const ripple = useRipple({
+    rippleConfig: {
+      color: "rgba(0,0,0,.2)",
+    },
+    rippleDisabled: false,
+  });
+
   return (
     <>
-      <RippleButton>测试测试</RippleButton>
+     
       <h1>Vite + React</h1>
-      <div className="card">
+      <div className="card" ref={ripple.containerRef}>
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>

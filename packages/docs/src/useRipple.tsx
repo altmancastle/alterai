@@ -1,129 +1,160 @@
-import React, { useState, useRef, useEffect, ReactNode } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 
-const ignoreMouseEventsTimeout = 800;
-const throttleDelay = 100;
-
-interface Ripple {
-  id: number;
-  x: number;
-  y: number;
-  size: number;
+export const enum RippleState {
+  FADING_IN,
+  VISIBLE,
+  FADING_OUT,
+  HIDDEN,
 }
 
-const useRipple = () => {
-  const [ripples, setRipples] = useState<Ripple[]>([]);
-  const ref = useRef<HTMLElement>(null);
-  const timer = useRef<number | null>(null);
-  const lastRippleTime = useRef<number>(0);
+export type RippleConfig = {
+  color?: string;
+  centered?: boolean;
+  radius?: number;
+  persistent?: boolean;
+  animation?: RippleAnimationConfig;
+  terminateOnPointerUp?: boolean;
+};
+
+export interface RippleAnimationConfig {
+  enterDuration?: number;
+  exitDuration?: number;
+}
+
+export interface RippleTarget {
+  rippleConfig: RippleConfig;
+  rippleDisabled: boolean;
+}
+
+export const defaultRippleAnimationConfig = {
+  enterDuration: 225,
+  exitDuration: 150,
+};
+
+const ignoreMouseEventsTimeout = 800;
+
+const pointerDownEvents = ['mousedown', 'touchstart'];
+const pointerUpEvents = ['mouseup', 'mouseleave', 'touchend', 'touchcancel'];
+
+export class RippleRef {
+  state: RippleState = RippleState.HIDDEN;
+
+  constructor(
+    private _renderer: { fadeOutRipple(ref: RippleRef): void },
+    public element: HTMLElement,
+    public config: RippleConfig,
+  ) {}
+
+  fadeOut() {
+    this._renderer.fadeOutRipple(this);
+  }
+}
+
+export const useRipple = (target: RippleTarget) => {
+  const [ripples, setRipples] = useState<RippleRef[]>([]);
+  const containerRef = useRef<HTMLElement | null>(null);
   const ignoreMouseEvents = useRef(false);
 
-  const createRipple = React.useCallback((event: MouseEvent | TouchEvent) => {
-    if (!ref.current) return;
+  const fadeOutRipple = useCallback((ripple: RippleRef) => {
+    ripple.state = RippleState.FADING_OUT;
+    setRipples((prevRipples) => [...prevRipples]);
 
-    const now = Date.now();
-    if (now - lastRippleTime.current < throttleDelay) {
-      return;
-    }
-    lastRippleTime.current = now;
-
-    const element = ref.current;
-    const rect = element.getBoundingClientRect();
-    
-    let x: number, y: number;
-    if (event instanceof MouseEvent) {
-      x = event.clientX - rect.left;
-      y = event.clientY - rect.top;
-    } else {
-      x = event.touches[0].clientX - rect.left;
-      y = event.touches[0].clientY - rect.top;
-    }
-
-    // 计算ripple大小，取较长的边的2倍作为直径
-    const size = Math.max(rect.width, rect.height) * 2;
-
-    const newRipple = {
-      id: now,
-      x,
-      y,
-      size,
-    };
-
-    setRipples((prevRipples) => [...prevRipples, newRipple]);
-
-    timer.current = setTimeout(() => {
-      setRipples((prevRipples) => prevRipples.filter((ripple) => ripple.id !== newRipple.id));
-    }, 600);
+    setTimeout(() => {
+      ripple.element.style.opacity = '0';
+    }, ripple.config.animation?.exitDuration || defaultRippleAnimationConfig.exitDuration);
+    setTimeout(() => {
+      setRipples((prevRipples) => prevRipples.filter((r) => r !== ripple));
+      ripple.element.remove();
+    }, (ripple.config.animation?.exitDuration || defaultRippleAnimationConfig.exitDuration) + 50);
   }, []);
 
-  const handleMouseDown = React.useCallback((event: MouseEvent) => {
-    if (!ignoreMouseEvents.current) {
-      createRipple(event);
-    }
-  }, [createRipple]);
+  const createRipple = useCallback((event: MouseEvent | TouchEvent) => {
+    if (target.rippleDisabled || !containerRef.current) return;
+    const container = containerRef.current;
+    const { width, height, left, top } = container.getBoundingClientRect();
+    const size = Math.max(width, height);
+    const radius = target.rippleConfig.radius || size / 2;
+    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+    const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+    const x = target.rippleConfig.centered ? width / 2 : clientX - left;
+    const y = target.rippleConfig.centered ? height / 2 : clientY - top;
 
-  const handleTouchStart = React.useCallback((event: TouchEvent) => {
-    ignoreMouseEvents.current = true;
-    createRipple(event);
+    const rippleElement = document.createElement('div');
+    rippleElement.style.position = 'absolute';
+    rippleElement.style.width = `${radius * 2}px`;
+    rippleElement.style.height = `${radius * 2}px`;
+    rippleElement.style.left = `${x - radius}px`;
+    rippleElement.style.top = `${y - radius}px`;
+    rippleElement.style.borderRadius = '50%';
+    rippleElement.style.backgroundColor = target.rippleConfig.color || 'rgba(0, 0, 0, 0.3)';
+    rippleElement.style.transform = 'scale(0)';
+    rippleElement.style.transition = `transform ${target.rippleConfig.animation?.enterDuration || defaultRippleAnimationConfig.enterDuration}ms, opacity ${target.rippleConfig.animation?.exitDuration || defaultRippleAnimationConfig.exitDuration}ms`;
+    rippleElement.style.overflow = 'hidden';
+
+    container.appendChild(rippleElement);
+
+    const rippleRef = new RippleRef({ fadeOutRipple }, rippleElement, target.rippleConfig);
+    rippleRef.state = RippleState.FADING_IN;
+    setRipples((prevRipples) => [...prevRipples, rippleRef]);
+
     setTimeout(() => {
-      ignoreMouseEvents.current = false;
-    }, ignoreMouseEventsTimeout);
+      rippleRef.state = RippleState.VISIBLE;
+      rippleElement.style.transform = 'scale(1)';
+    }, 10);
+
+    if (!target.rippleConfig.persistent) {
+      setTimeout(() => {
+        rippleRef.fadeOut();
+      }, target.rippleConfig.animation?.enterDuration || defaultRippleAnimationConfig.enterDuration);
+    }
+  }, [target.rippleDisabled, target.rippleConfig, fadeOutRipple]);
+
+  const handlePointerUp = useCallback(() => {
+    if (target.rippleConfig.terminateOnPointerUp) {
+      ripples.forEach((ripple) => ripple.fadeOut());
+    }
+  }, [target.rippleConfig.terminateOnPointerUp, ripples]);
+
+  const handlePointerDown = useCallback((event: MouseEvent | TouchEvent) => {
+    if (event.type === 'mousedown' && ignoreMouseEvents.current) return;
+    createRipple(event);
+
+    if (event.type === 'touchstart') {
+      ignoreMouseEvents.current = true;
+      setTimeout(() => {
+        ignoreMouseEvents.current = false;
+      }, ignoreMouseEventsTimeout);
+    }
   }, [createRipple]);
 
   useEffect(() => {
-    const element = ref.current;
-    if (element) {
-      element.addEventListener('mousedown', handleMouseDown);
-      element.addEventListener('touchstart', handleTouchStart);
+    const container = containerRef.current;
+    if (!container) return;
 
-      return () => {
-        if (timer.current) {
-          clearTimeout(timer.current);
-        }
-        element.removeEventListener('mousedown', handleMouseDown);
-        element.removeEventListener('touchstart', handleTouchStart);
-      };
-    }
-  }, [handleMouseDown, handleTouchStart]);
+    const handlePointerDownWrapper = (event: Event) => handlePointerDown(event as MouseEvent | TouchEvent);
+    const handlePointerUpWrapper = () => handlePointerUp();
 
-  return { ref, ripples };
-};
+    pointerDownEvents.forEach((event) => {
+      container.addEventListener(event, handlePointerDownWrapper, { passive: true});
+    });
 
-export const RippleButton = ({ children }: {children: ReactNode}) => {
-  const { ref, ripples } = useRipple();
+    pointerUpEvents.forEach((event) => {
+      container.addEventListener(event, handlePointerUpWrapper, { passive: true});
+    });
 
-  return (
-    <div
-      ref={ref}
-      style={{
-        height: "100px",
-        width: "100px",
-        position: 'relative',
-        overflow: 'hidden',
-        padding: '10px 20px',
-        border: 'none',
-        borderRadius: '4px',
-        color: '#333333',
-        cursor: 'pointer',
-      }}
-    >
-      {children}
-      {ripples.map((ripple) => (
-        <div
-          key={ripple.id}
-          style={{
-            position: 'absolute',
-            top: ripple.y - ripple.size / 2,
-            left: ripple.x - ripple.size / 2,
-            width: ripple.size,
-            height: ripple.size,
-            borderRadius: '50%',
-            backgroundColor: 'rgba(0, 0, 0, 0.3)',
-            transform: 'scale(0)',
-            animation: 'ripple 600ms linear',
-            pointerEvents: 'none'
-          }}
-        />
-      ))}
-    </div>
-  );
+    return () => {
+      pointerDownEvents.forEach((event) => {
+        container.removeEventListener(event, handlePointerDownWrapper);
+      });
+
+      pointerUpEvents.forEach((event) => {
+        container.removeEventListener(event, handlePointerUpWrapper);
+      });
+    };
+  }, [handlePointerDown, handlePointerUp]);
+
+  return {
+    ripples,
+    containerRef,
+  };
 };
