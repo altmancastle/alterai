@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { RippleAnimationConfig, RippleConfig, RippleRef } from "./ripple-ref";
 import { RippleRenderer } from "./ripple-renderer";
-import "./ripple.scss";
 
 export interface RippleProps {
   color?: string;
@@ -25,11 +24,34 @@ export function useRipple(props: RippleProps) {
   } = props;
 
   const [_disabled, set_Disabled] = useState(false);
+  const parentRef = useRef<HTMLElement>(null);
   const triggerRef = useRef<HTMLElement>(null);
   const rippleRenderer = useRef<RippleRenderer>(null);
 
   useEffect(() => {
-    if (!disabled && triggerRef.current) {
+    if (!disabled && parentRef.current) {
+      // 在 triggerRef.current 第一个子子元素的同级添加一个dom元素 宽高等于 triggerRef.current 并进行绝对定位
+      const rippleContainer = document.createElement('div');
+      rippleContainer.classList.add('mat-ripple');
+      rippleContainer.style.position = 'absolute';
+      rippleContainer.style.top = '0';
+      rippleContainer.style.left = '0';
+      rippleContainer.style.width = '100%';
+      rippleContainer.style.height = '100%';
+      rippleContainer.style.overflow = 'hidden';
+      rippleContainer.style.pointerEvents = 'none';
+      rippleContainer.style.borderRadius = 'inherit';
+      rippleContainer.style.transform = 'translateZ(0)';
+      const firstChild = parentRef.current.firstElementChild;
+      if (firstChild) {
+        parentRef.current.insertBefore(rippleContainer, firstChild);
+      } else {
+        parentRef.current.appendChild(rippleContainer);
+      }
+      triggerRef.current = rippleContainer;
+
+      console.log(rippleContainer)
+
       rippleRenderer.current = new RippleRenderer({
         rippleConfig: {
             centered: centered,

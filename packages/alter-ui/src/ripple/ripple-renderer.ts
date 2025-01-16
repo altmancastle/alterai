@@ -318,9 +318,9 @@ export class RippleRenderer implements EventListenerObject {
     });
   }
 
-  /** Runs a timeout outside of the Angular zone to avoid triggering the change detection. */
-  private _runTimeoutOutsideZone(fn: () => void, delay = 0) {
-    return () => setTimeout(fn, delay);
+  /** Runs a timeout and returns the timeout ID for cleanup */
+  private _runTimeoutOutsideZone(fn: () => void, delay = 0): number {
+    return window.setTimeout(fn, delay);
   }
 
   /** Registers event listeners for a given list of events. */

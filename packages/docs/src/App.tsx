@@ -7,12 +7,12 @@ function App() {
 
   const { triggerRef } = useRipple({
     disabled: false,
-    color: "#333"
+    color: "#f8f8f8"
   })
 
   return (
     <>
-      <div ref={triggerRef}>
+      <div className='ripple' ref={triggerRef}>
         测试
       </div>
       <h1>Vite + React</h1>
