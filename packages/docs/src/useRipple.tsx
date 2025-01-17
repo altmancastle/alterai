@@ -62,6 +62,8 @@ export const useRipple = (target: RippleTarget) => {
 
   const isPointerDown = useRef(false);
   const containerRect = useRef<DOMRect | null>(null);
+  const lastRippleTime = useRef(0);
+
   const fadeOutRipple = useCallback((ripple: RippleRef) => {
     ripple.state = RippleState.FADING_OUT;
     setRipple(null);
@@ -73,6 +75,10 @@ export const useRipple = (target: RippleTarget) => {
   }, []);
 
   const createRipple = useCallback((event: MouseEvent | TouchEvent) => {
+    const now = Date.now();
+    if (now - lastRippleTime.current < 100) return; // Throttle ripples to 100ms
+    lastRippleTime.current = now;
+
     if (target.rippleDisabled || !containerRef.current) return;
     const container = containerRef.current;
     if (!containerRect.current) {
@@ -83,7 +89,7 @@ export const useRipple = (target: RippleTarget) => {
     const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
     const x = target.rippleConfig.centered ? width / 2 + left : clientX - left;
     const y = target.rippleConfig.centered ? height / 2 + top : clientY - top;
-    const radius = Math.min(width, height) * 0.5; // Adjusted to make the ripple smaller initially
+    const radius = target.rippleConfig.radius || Math.sqrt(width * width + height * height);
     const rippleElement = document.createElement('div');
     rippleElement.style.position = 'absolute';
     rippleElement.style.width = `${radius * 2}px`;
