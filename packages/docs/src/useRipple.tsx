@@ -54,12 +54,11 @@ export class RippleRef {
   }
 }
 
-export const useRipple = (target: RippleTarget) => {
+export function useRipple<T extends HTMLElement>(target: RippleTarget) {
   const [ripple, setRipple] = useState<RippleRef | null>(null);
-  const containerRef = useRef<HTMLElement | null>(null);
+  const containerRef = useRef<T>(null);
   const ignoreMouseEvents = useRef(false);
   const lastTouchStartEvent = useRef(0);
-
   const isPointerDown = useRef(false);
   const containerRect = useRef<DOMRect | null>(null);
   const lastRippleTime = useRef(0);
@@ -76,9 +75,9 @@ export const useRipple = (target: RippleTarget) => {
 
   const createRipple = useCallback((event: MouseEvent | TouchEvent) => {
     const now = Date.now();
-    if (now - lastRippleTime.current < 100) return; // Throttle ripples to 100ms
+    if (now - lastRippleTime.current < 100) return;
     lastRippleTime.current = now;
-
+    
     if (target.rippleDisabled || !containerRef.current) return;
     const container = containerRef.current;
     if (!containerRect.current) {
