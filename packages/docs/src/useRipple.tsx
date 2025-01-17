@@ -163,9 +163,3 @@ export const useRipple = (target: RippleTarget) => {
     containerRef,
   };
 };
-
-function distanceToFurthestCorner(x: number, y: number, rect: DOMRect) {
-  const distX = Math.max(Math.abs(x - rect.left), Math.abs(x - rect.right));
-  const distY = Math.max(Math.abs(y - rect.top), Math.abs(y - rect.bottom));
-  return Math.sqrt(distX * distX + distY * distY);
-}
