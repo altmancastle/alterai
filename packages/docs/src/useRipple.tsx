@@ -19,8 +19,6 @@ export type RippleConfig = {
 export interface RippleAnimationConfig {
   enterDuration?: number;
   exitDuration?: number;
-  enterTimingFunction?: string;
-  exitTimingFunction?: string;
 }
 
 export interface RippleTarget {
@@ -31,8 +29,6 @@ export interface RippleTarget {
 export const defaultRippleAnimationConfig = {
   enterDuration: 350,
   exitDuration: 400,
-  enterTimingFunction: 'cubic-bezier(0.35, 0, 0.2, 1)',
-  exitTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
 };
 
 const ignoreMouseEventsTimeout = 800;
@@ -65,8 +61,7 @@ export function useRipple<T extends HTMLElement>(target: RippleTarget) {
 
   const fadeOutRipple = useCallback((ripple: RippleRef) => {
     ripple.state = RippleState.FADING_OUT;
-    setRipple(null);
-    ripple.element.style.transition = `opacity ${ripple.config.animation?.exitDuration || defaultRippleAnimationConfig.exitDuration}ms ${ripple.config.animation?.exitTimingFunction || defaultRippleAnimationConfig.exitTimingFunction}`;
+    ripple.element.style.transitionDuration = `${ripple.config.animation?.exitDuration || defaultRippleAnimationConfig.exitDuration}ms`;
     ripple.element.style.opacity = '0';
     setTimeout(() => {
       ripple.state = RippleState.HIDDEN;
@@ -97,16 +92,16 @@ export function useRipple<T extends HTMLElement>(target: RippleTarget) {
     rippleElement.style.left = `${x - radius}px`;
     rippleElement.style.top = `${y - radius}px`;
     rippleElement.style.borderRadius = '50%';
-    rippleElement.style.opacity = "0";
     rippleElement.style.pointerEvents = "none";
-    rippleElement.style.backgroundColor = target.rippleConfig.color || 'rgba(0, 0, 0, 0.3)';
     rippleElement.style.transform = 'scale(0)';
+    rippleElement.style.transition = `opacity, transform 0ms cubic-bezier(0, 0, 0.2, 1)`;
     rippleElement.style.transitionDuration = `${target.rippleConfig.animation?.enterDuration || defaultRippleAnimationConfig.enterDuration}ms`;
+    rippleElement.style.backgroundColor = target.rippleConfig.color || 'rgba(0, 0, 0, 0.3)';
     container.appendChild(rippleElement);
 
     enforceStyleRecalculation(rippleElement);
-    rippleElement.style.transform = 'scale(1)';
 
+    rippleElement.style.transform = 'scale(1)';
     container.style.position = "relative";
     container.style.overflow = "hidden";
 
@@ -114,7 +109,6 @@ export function useRipple<T extends HTMLElement>(target: RippleTarget) {
     rippleRef.state = RippleState.FADING_IN;
     setRipple(rippleRef);
     setTimeout(() => {
-      rippleElement.style.opacity = "0.5";
       rippleElement.style.transform = 'scale(1)';
       rippleRef.state = RippleState.VISIBLE;
     }, 0);
@@ -152,6 +146,7 @@ export function useRipple<T extends HTMLElement>(target: RippleTarget) {
 
   useEffect(() => {
     const container = containerRef.current;
+
     if (!container) return;
 
     const handlePointerDownWrapper = (event: Event) => handlePointerDown(event as MouseEvent | TouchEvent);

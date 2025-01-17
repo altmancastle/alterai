@@ -5,7 +5,7 @@ function App() {
 
   const ripple = useRipple<HTMLDivElement>({
     rippleConfig: {
-      color: "rgba(0,0,0,0.5)",
+      color: "rgba(0, 0, 0, 0.3)",
     },
     rippleDisabled: false,
   });
