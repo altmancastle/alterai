@@ -59,23 +59,37 @@ export const useRipple = (target: RippleTarget) => {
   const containerRef = useRef<HTMLElement | null>(null);
   const ignoreMouseEvents = useRef(false);
 
+  // New state variables
+  const isPointerDown = useRef(false);
+  const activeRipples = useRef(new Set<RippleRef>());
+  const mostRecentTransientRipple = useRef<RippleRef | null>(null);
+  const lastTouchStartEvent = useRef<number>(0);
+  const pointerUpEventsRegistered = useRef(false);
+  const containerRect = useRef<ClientRect | null>(null);
+
   const fadeOutRipple = useCallback((ripple: RippleRef) => {
     ripple.state = RippleState.FADING_OUT;
     setRipples((prevRipples) => [...prevRipples]);
 
     ripple.element.style.transition = `opacity ${ripple.config.animation?.exitDuration || defaultRippleAnimationConfig.exitDuration}ms ${ripple.config.animation?.exitTimingFunction || defaultRippleAnimationConfig.exitTimingFunction}`;
-      ripple.element.style.opacity = '0';
+    ripple.element.style.opacity = '0';
     setTimeout(() => {
       setRipples((prevRipples) => prevRipples.filter((r) => r !== ripple));
       ripple.element.remove();
+      activeRipples.current.delete(ripple);
+      if (mostRecentTransientRipple.current === ripple) {
+        mostRecentTransientRipple.current = null;
+      }
     }, ripple.config.animation?.exitDuration || defaultRippleAnimationConfig.exitDuration);
   }, []);
 
   const createRipple = useCallback((event: MouseEvent | TouchEvent) => {
     if (target.rippleDisabled || !containerRef.current) return;
     const container = containerRef.current;
-    const containerRect = container.getBoundingClientRect();
-    const { width, height, left, top } = containerRect;
+    if (!containerRect.current) {
+      containerRect.current = container.getBoundingClientRect();
+    }
+    const { width, height, left, top } = containerRect.current;
     const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
     const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
     const x = target.rippleConfig.centered ? width / 2 + left : clientX - left;
@@ -100,6 +114,11 @@ export const useRipple = (target: RippleTarget) => {
     const rippleRef = new RippleRef({ fadeOutRipple }, rippleElement, target.rippleConfig);
     rippleRef.state = RippleState.FADING_IN;
     setRipples((prevRipples) => [...prevRipples, rippleRef]);
+    activeRipples.current.add(rippleRef);
+
+    if (!target.rippleConfig.persistent) {
+      mostRecentTransientRipple.current = rippleRef;
+    }
 
     setTimeout(() => {
       rippleElement.style.opacity = "0.5";
@@ -116,15 +135,18 @@ export const useRipple = (target: RippleTarget) => {
 
   const handlePointerUp = useCallback(() => {
     if (target.rippleConfig.terminateOnPointerUp) {
-      ripples.forEach((ripple) => ripple.fadeOut());
+      activeRipples.current.forEach((ripple) => ripple.fadeOut());
     }
-  }, [target.rippleConfig.terminateOnPointerUp, ripples]);
+    isPointerDown.current = false;
+  }, [target.rippleConfig.terminateOnPointerUp]);
 
   const handlePointerDown = useCallback((event: MouseEvent | TouchEvent) => {
     if (event.type === 'mousedown' && ignoreMouseEvents.current) return;
+    isPointerDown.current = true;
     createRipple(event);
 
     if (event.type === 'touchstart') {
+      lastTouchStartEvent.current = Date.now();
       ignoreMouseEvents.current = true;
       setTimeout(() => {
         ignoreMouseEvents.current = false;
@@ -143,9 +165,12 @@ export const useRipple = (target: RippleTarget) => {
       container.addEventListener(event, handlePointerDownWrapper, { passive: true});
     });
 
-    pointerUpEvents.forEach((event) => {
-      container.addEventListener(event, handlePointerUpWrapper, { passive: true});
-    });
+    if (!pointerUpEventsRegistered.current) {
+      pointerUpEvents.forEach((event) => {
+        container.addEventListener(event, handlePointerUpWrapper, { passive: true});
+      });
+      pointerUpEventsRegistered.current = true;
+    }
 
     return () => {
       pointerDownEvents.forEach((event) => {
@@ -155,6 +180,7 @@ export const useRipple = (target: RippleTarget) => {
       pointerUpEvents.forEach((event) => {
         container.removeEventListener(event, handlePointerUpWrapper);
       });
+      pointerUpEventsRegistered.current = false;
     };
   }, [handlePointerDown, handlePointerUp]);
 
