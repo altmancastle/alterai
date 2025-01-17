@@ -1,31 +1,26 @@
-import { useState } from 'react'
 import './App.css'
 import { useRipple } from './useRipple';
 
 function App() {
-  const [count, setCount] = useState(0);
 
   const ripple = useRipple<HTMLDivElement>({
     rippleConfig: {
-      color: "rgba(209, 47, 47, 0.3)",
+      color: "rgba(209, 47, 47, 0.5)",
+      centered: true,
     },
     rippleDisabled: false,
   });
 
   return (
     <>
-      <h1>Vite + React</h1>
-      <div className="card" ref={ripple.containerRef}>
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <div className="card" ref={ripple.containerRef}>1</div>
+      <div className="card" ref={ripple.containerRef}>2</div>
+      <div className="card" ref={ripple.containerRef}>3</div>
+      <div className="card" ref={ripple.containerRef}>4</div>
+      <div className="card" ref={ripple.containerRef}>5</div>
+      <div className="card" ref={ripple.containerRef}>6</div>
+      <div className="card" ref={ripple.containerRef}>7</div>
+      <div className="card" ref={ripple.containerRef}>8</div>
     </>
   )
 }

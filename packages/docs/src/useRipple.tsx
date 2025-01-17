@@ -29,10 +29,10 @@ export interface RippleTarget {
 }
 
 export const defaultRippleAnimationConfig = {
-  enterDuration: 450,
-  exitDuration: 300,
-  enterTimingFunction: 'cubic-bezier(0.1, 0, 0.2, 1)',
-  exitTimingFunction: 'cubic-bezier(0.1, 0, 0.2, 1)',
+  enterDuration: 350,
+  exitDuration: 400,
+  enterTimingFunction: 'cubic-bezier(0.35, 0, 0.2, 1)',
+  exitTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
 };
 
 const ignoreMouseEventsTimeout = 800;
@@ -69,6 +69,7 @@ export function useRipple<T extends HTMLElement>(target: RippleTarget) {
     ripple.element.style.transition = `opacity ${ripple.config.animation?.exitDuration || defaultRippleAnimationConfig.exitDuration}ms ${ripple.config.animation?.exitTimingFunction || defaultRippleAnimationConfig.exitTimingFunction}`;
     ripple.element.style.opacity = '0';
     setTimeout(() => {
+      ripple.state = RippleState.HIDDEN;
       ripple.element.remove();
     }, ripple.config.animation?.exitDuration || defaultRippleAnimationConfig.exitDuration);
   }, []);
@@ -97,9 +98,14 @@ export function useRipple<T extends HTMLElement>(target: RippleTarget) {
     rippleElement.style.top = `${y - radius}px`;
     rippleElement.style.borderRadius = '50%';
     rippleElement.style.opacity = "0";
+    rippleElement.style.pointerEvents = "none";
     rippleElement.style.backgroundColor = target.rippleConfig.color || 'rgba(0, 0, 0, 0.3)';
     rippleElement.style.transform = 'scale(0)';
-    rippleElement.style.transition = `transform ${target.rippleConfig.animation?.enterDuration || defaultRippleAnimationConfig.enterDuration}ms ${target.rippleConfig.animation?.enterTimingFunction || defaultRippleAnimationConfig.enterTimingFunction}, opacity ${target.rippleConfig.animation?.enterDuration || defaultRippleAnimationConfig.enterDuration}ms ${target.rippleConfig.animation?.enterTimingFunction || defaultRippleAnimationConfig.enterTimingFunction}`;
+    rippleElement.style.transition = `
+      transform ${target.rippleConfig.animation?.enterDuration || defaultRippleAnimationConfig.enterDuration}ms 
+      ${target.rippleConfig.animation?.enterTimingFunction || defaultRippleAnimationConfig.enterTimingFunction},
+      opacity ${target.rippleConfig.animation?.enterDuration || defaultRippleAnimationConfig.enterDuration}ms 
+      ${target.rippleConfig.animation?.enterTimingFunction || defaultRippleAnimationConfig.enterTimingFunction}`;
 
     container.appendChild(rippleElement);
     container.style.position = "relative";
@@ -112,7 +118,7 @@ export function useRipple<T extends HTMLElement>(target: RippleTarget) {
       rippleElement.style.opacity = "0.5";
       rippleElement.style.transform = 'scale(1)';
       rippleRef.state = RippleState.VISIBLE;
-    }, 10);
+    }, 0);
 
     if (!target.rippleConfig.persistent) {
       setTimeout(() => {
