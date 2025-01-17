@@ -1,18 +1,7 @@
-@keyframes ripple {
-  0% {
-    transform: scale(0);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(2);
-    opacity: 0;
-  }
-}
-
 .card {
   border-radius: 10px;
-  width: 400px;
-  height: 400px;
+  width: 300px;
+  height: 300px;
   border: 1px solid #f8f8f8;
   display: flex;
   align-items: center;

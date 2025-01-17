@@ -101,13 +101,12 @@ export function useRipple<T extends HTMLElement>(target: RippleTarget) {
     rippleElement.style.pointerEvents = "none";
     rippleElement.style.backgroundColor = target.rippleConfig.color || 'rgba(0, 0, 0, 0.3)';
     rippleElement.style.transform = 'scale(0)';
-    rippleElement.style.transition = `
-      transform ${target.rippleConfig.animation?.enterDuration || defaultRippleAnimationConfig.enterDuration}ms 
-      ${target.rippleConfig.animation?.enterTimingFunction || defaultRippleAnimationConfig.enterTimingFunction},
-      opacity ${target.rippleConfig.animation?.enterDuration || defaultRippleAnimationConfig.enterDuration}ms 
-      ${target.rippleConfig.animation?.enterTimingFunction || defaultRippleAnimationConfig.enterTimingFunction}`;
-
+    rippleElement.style.transitionDuration = `${target.rippleConfig.animation?.enterDuration || defaultRippleAnimationConfig.enterDuration}ms`;
     container.appendChild(rippleElement);
+
+    enforceStyleRecalculation(rippleElement);
+    rippleElement.style.transform = 'scale(1)';
+
     container.style.position = "relative";
     container.style.overflow = "hidden";
 
@@ -182,3 +181,11 @@ export function useRipple<T extends HTMLElement>(target: RippleTarget) {
     containerRef,
   };
 };
+
+/** Enforces a style recalculation of a DOM element by computing its styles. */
+function enforceStyleRecalculation(element: HTMLElement) {
+  // Enforce a style recalculation by calling `getComputedStyle` and accessing any property.
+  // Calling `getPropertyValue` is important to let optimizers know that this is not a noop.
+  // See: https://gist.github.com/paulirish/5d52fb081b3570c81e3a
+  window.getComputedStyle(element).getPropertyValue('opacity');
+}
