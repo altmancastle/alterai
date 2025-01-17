@@ -29,10 +29,10 @@ export interface RippleTarget {
 }
 
 export const defaultRippleAnimationConfig = {
-  enterDuration: 225,
-  exitDuration: 150,
-  enterTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-  exitTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+  enterDuration: 450,
+  exitDuration: 300,
+  enterTimingFunction: 'cubic-bezier(0.1, 0, 0.2, 1)',
+  exitTimingFunction: 'cubic-bezier(0.1, 0, 0.2, 1)',
 };
 
 const ignoreMouseEventsTimeout = 800;
@@ -55,31 +55,20 @@ export class RippleRef {
 }
 
 export const useRipple = (target: RippleTarget) => {
-  const [ripples, setRipples] = useState<RippleRef[]>([]);
+  const [ripple, setRipple] = useState<RippleRef | null>(null);
   const containerRef = useRef<HTMLElement | null>(null);
   const ignoreMouseEvents = useRef(false);
+  const lastTouchStartEvent = useRef(0);
 
-  // New state variables
   const isPointerDown = useRef(false);
-  const activeRipples = useRef(new Set<RippleRef>());
-  const mostRecentTransientRipple = useRef<RippleRef | null>(null);
-  const lastTouchStartEvent = useRef<number>(0);
-  const pointerUpEventsRegistered = useRef(false);
-  const containerRect = useRef<ClientRect | null>(null);
-
+  const containerRect = useRef<DOMRect | null>(null);
   const fadeOutRipple = useCallback((ripple: RippleRef) => {
     ripple.state = RippleState.FADING_OUT;
-    setRipples((prevRipples) => [...prevRipples]);
-
+    setRipple(null);
     ripple.element.style.transition = `opacity ${ripple.config.animation?.exitDuration || defaultRippleAnimationConfig.exitDuration}ms ${ripple.config.animation?.exitTimingFunction || defaultRippleAnimationConfig.exitTimingFunction}`;
     ripple.element.style.opacity = '0';
     setTimeout(() => {
-      setRipples((prevRipples) => prevRipples.filter((r) => r !== ripple));
       ripple.element.remove();
-      activeRipples.current.delete(ripple);
-      if (mostRecentTransientRipple.current === ripple) {
-        mostRecentTransientRipple.current = null;
-      }
     }, ripple.config.animation?.exitDuration || defaultRippleAnimationConfig.exitDuration);
   }, []);
 
@@ -94,7 +83,7 @@ export const useRipple = (target: RippleTarget) => {
     const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
     const x = target.rippleConfig.centered ? width / 2 + left : clientX - left;
     const y = target.rippleConfig.centered ? height / 2 + top : clientY - top;
-    const radius = Math.max(width, height) * Math.SQRT2;
+    const radius = Math.min(width, height) * 0.5; // Adjusted to make the ripple smaller initially
     const rippleElement = document.createElement('div');
     rippleElement.style.position = 'absolute';
     rippleElement.style.width = `${radius * 2}px`;
@@ -113,13 +102,7 @@ export const useRipple = (target: RippleTarget) => {
 
     const rippleRef = new RippleRef({ fadeOutRipple }, rippleElement, target.rippleConfig);
     rippleRef.state = RippleState.FADING_IN;
-    setRipples((prevRipples) => [...prevRipples, rippleRef]);
-    activeRipples.current.add(rippleRef);
-
-    if (!target.rippleConfig.persistent) {
-      mostRecentTransientRipple.current = rippleRef;
-    }
-
+    setRipple(rippleRef);
     setTimeout(() => {
       rippleElement.style.opacity = "0.5";
       rippleElement.style.transform = 'scale(1)';
@@ -134,14 +117,17 @@ export const useRipple = (target: RippleTarget) => {
   }, [target.rippleDisabled, target.rippleConfig, fadeOutRipple]);
 
   const handlePointerUp = useCallback(() => {
-    if (target.rippleConfig.terminateOnPointerUp) {
-      activeRipples.current.forEach((ripple) => ripple.fadeOut());
+    if (target.rippleConfig.terminateOnPointerUp && ripple) {
+      ripple.fadeOut();
     }
     isPointerDown.current = false;
-  }, [target.rippleConfig.terminateOnPointerUp]);
+  }, [target.rippleConfig.terminateOnPointerUp, ripple]);
 
   const handlePointerDown = useCallback((event: MouseEvent | TouchEvent) => {
     if (event.type === 'mousedown' && ignoreMouseEvents.current) return;
+    if (ripple) {
+      ripple.fadeOut();
+    }
     isPointerDown.current = true;
     createRipple(event);
 
@@ -152,7 +138,7 @@ export const useRipple = (target: RippleTarget) => {
         ignoreMouseEvents.current = false;
       }, ignoreMouseEventsTimeout);
     }
-  }, [createRipple]);
+  }, [createRipple, ripple]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -165,12 +151,9 @@ export const useRipple = (target: RippleTarget) => {
       container.addEventListener(event, handlePointerDownWrapper, { passive: true});
     });
 
-    if (!pointerUpEventsRegistered.current) {
       pointerUpEvents.forEach((event) => {
         container.addEventListener(event, handlePointerUpWrapper, { passive: true});
       });
-      pointerUpEventsRegistered.current = true;
-    }
 
     return () => {
       pointerDownEvents.forEach((event) => {
@@ -180,12 +163,11 @@ export const useRipple = (target: RippleTarget) => {
       pointerUpEvents.forEach((event) => {
         container.removeEventListener(event, handlePointerUpWrapper);
       });
-      pointerUpEventsRegistered.current = false;
     };
   }, [handlePointerDown, handlePointerUp]);
 
   return {
-    ripples,
+    ripple,
     containerRef,
   };
 };
