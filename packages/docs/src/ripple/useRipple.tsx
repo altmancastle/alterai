@@ -58,10 +58,10 @@ export function useRipple<T extends HTMLElement | SVGElement>(config: RippleConf
     }
 
     const radius = mergedConfig.radius || distanceToFurthestCorner(x, y, containerRect);
-    
+
     const offsetX = x - containerRect.left;
     const offsetY = y - containerRect.top;
-    
+
     const container = containerRef.current;
 
     const rippleElement = container instanceof SVGElement ? document.createElementNS('http://www.w3.org/2000/svg', 'circle') : document.createElement('div');
@@ -70,6 +70,7 @@ export function useRipple<T extends HTMLElement | SVGElement>(config: RippleConf
       rippleElement.setAttribute('cx', `${offsetX}`);
       rippleElement.setAttribute('cy', `${offsetY}`);
       rippleElement.setAttribute('r', '0');
+      rippleElement.style.pointerEvents = 'none';
       if (mergedConfig.color) {
         rippleElement.setAttribute('fill', mergedConfig.color);
       }
@@ -92,7 +93,11 @@ export function useRipple<T extends HTMLElement | SVGElement>(config: RippleConf
   
     rippleElement.style.transitionDuration = `${animationConfig.enterDuration}ms`;
 
-    containerRef.current.appendChild(rippleElement);
+    if (container instanceof SVGElement && !(container instanceof SVGSVGElement)) {
+      container.parentElement?.appendChild(rippleElement);
+    } else {
+      containerRef.current.appendChild(rippleElement);
+    }
     window.getComputedStyle(rippleElement).getPropertyValue('opacity');
 
     if (container instanceof SVGElement) {
