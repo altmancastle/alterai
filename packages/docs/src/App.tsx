@@ -3,9 +3,9 @@ import './App.css';
 import { useRipple } from './ripple/useRipple';
 
 function App() {
-  const ripple = useRipple<SVGSVGElement>({
+  const ripple = useRipple({
     color: "rgba(0,0,0, .1)",
-    centered: true,
+    centered: false,
     animation: {
       enterDuration: 300,
       exitDuration: 200
@@ -16,13 +16,13 @@ function App() {
     <div className="App">
       <h1>Ripple Component Examples</h1>
 
-      <svg ref={ripple.containerRef} width={300} height={300} style={{position: "relative"}}> 
+      {/* <svg ref={ripple.containerRef} width={300} height={300} style={{position: "relative"}}> 
         <rect width="100%" height="100%" fill="#f8f8f8"></rect>
       </svg>
-      
+       */}
       <div style={{ margin: '20px 0' }}>
         <h2>useRipple Hook Example</h2>
-        {/* <div 
+        <div 
           style={{ 
             padding: '20px', 
             border: '1px solid #ccc',
@@ -35,7 +35,7 @@ function App() {
           ref={ripple.containerRef}
         >
           Click me (useRipple)
-        </div> */}
+        </div>
       </div>
 
       <div style={{ margin: '20px 0' }}>

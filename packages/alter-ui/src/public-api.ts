@@ -1,1 +1,1 @@
-export * from "./ripple/index";
+export * from './ripple/index';
