@@ -16,7 +16,7 @@ type RippleConfig = {
 type RippleState = 'FADING_IN' | 'VISIBLE' | 'FADING_OUT' | 'HIDDEN';
 
 type RippleRef = {
-  element: HTMLElement;
+  element: HTMLElement | SVGElement;
   config: RippleConfig;
   state: RippleState;
   fadeOut: () => void;
@@ -33,8 +33,7 @@ function distanceToFurthestCorner(x: number, y: number, rect: DOMRect) {
   return Math.sqrt(distX * distX + distY * distY);
 }
 
-
-export function useRipple<T extends HTMLElement | SVGSVGElement>(config: RippleConfig = {}) {
+export function useRipple<T extends HTMLElement | SVGElement>(config: RippleConfig = {}) {
   const containerRef = useRef<T>(null);
   const [ripples, setRipples] = useState<RippleRef[]>([]);
   const isPointerDown = useRef(false);
@@ -62,27 +61,45 @@ export function useRipple<T extends HTMLElement | SVGSVGElement>(config: RippleC
     
     const offsetX = x - containerRect.left;
     const offsetY = y - containerRect.top;
+    
+    const container = containerRef.current;
 
-    const rippleElement = document.createElement('div');
-    rippleElement.style.position = "absolute";
-    rippleElement.style.borderRadius = "50%";
-    rippleElement.style.pointerEvents = "none";
-    rippleElement.style.transition = "opacity, transform 0ms cubic-bezier(0, 0, 0.2, 1)";
-    rippleElement.style.transform = "scale(0)";
-    rippleElement.style.left = `${offsetX - radius}px`;
-    rippleElement.style.top = `${offsetY - radius}px`;
-    rippleElement.style.width = `${radius * 2}px`;
-    rippleElement.style.height = `${radius * 2}px`;
+    const rippleElement = container instanceof SVGElement ? document.createElementNS('http://www.w3.org/2000/svg', 'circle') : document.createElement('div');
+
+    if (container instanceof SVGElement) {
+      rippleElement.setAttribute('cx', `${offsetX}`);
+      rippleElement.setAttribute('cy', `${offsetY}`);
+      rippleElement.setAttribute('r', '0');
+      if (mergedConfig.color) {
+        rippleElement.setAttribute('fill', mergedConfig.color);
+      }
+      rippleElement.style.transition = `r ${animationConfig.enterDuration}ms cubic-bezier(0, 0, 0.2, 1)`;
+      rippleElement.style.opacity = '1';
+    } else {
+      rippleElement.style.position = 'absolute';
+      rippleElement.style.borderRadius = '50%';
+      rippleElement.style.pointerEvents = 'none';
+      rippleElement.style.transition = 'opacity, transform 0ms cubic-bezier(0, 0, 0.2, 1)';
+      rippleElement.style.transform = 'scale(0)';
+      rippleElement.style.left = `${offsetX - radius}px`;
+      rippleElement.style.top = `${offsetY - radius}px`;
+      rippleElement.style.width = `${radius * 2}px`;
+      rippleElement.style.height = `${radius * 2}px`;
+      if (mergedConfig.color) {
+        rippleElement.style.backgroundColor = mergedConfig.color;
+      }
+    }
+  
     rippleElement.style.transitionDuration = `${animationConfig.enterDuration}ms`;
 
-    if (mergedConfig.color) {
-      rippleElement.style.backgroundColor = mergedConfig.color;
-    }
-
     containerRef.current.appendChild(rippleElement);
-    // Force style recalculation
     window.getComputedStyle(rippleElement).getPropertyValue('opacity');
+
+    if (container instanceof SVGElement) {
+      rippleElement.setAttribute('r', `${radius}`);
+    } else {
     rippleElement.style.transform = 'scale(1)';
+    }
 
     const rippleRef: RippleRef = {
       element: rippleElement,
@@ -128,12 +145,12 @@ export function useRipple<T extends HTMLElement | SVGSVGElement>(config: RippleC
 
   const handlePointerUp = useCallback(() => {
     isPointerDown.current = false;
-    ripples.forEach(ripple => {
+      ripples.forEach(ripple => {
       if (!ripple.config.persistent && 
           (ripple.state === 'VISIBLE' || 
            (ripple.config.terminateOnPointerUp && ripple.state === 'FADING_IN'))) {
         ripple.fadeOut();
-      }
+}
     });
   }, [ripples]);
 

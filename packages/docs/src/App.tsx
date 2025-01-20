@@ -4,7 +4,7 @@ import { useRipple } from './ripple/useRipple';
 
 function App() {
   const ripple = useRipple<SVGSVGElement>({
-    color: "rgba(0,0,0,.2)",
+    color: "rgba(0,0,0, .2)",
     centered: false,
     animation: {
       enterDuration: 300,
@@ -16,7 +16,7 @@ function App() {
     <div className="App">
       <h1>Ripple Component Examples</h1>
 
-      <svg ref={ripple.containerRef} width={100} height={100}> 
+      <svg ref={ripple.containerRef} width={300} height={300} style={{position: "relative"}}> 
         <rect width="100%" height="100%" fill="#f8f8f8"></rect>
       </svg>
       
