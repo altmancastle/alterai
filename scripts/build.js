@@ -4,6 +4,7 @@ let target = process.argv[2];
 const alias = {
   docs: 'docs',
   dev: 'alter-ui',
+  ripple: 'ripple',
 };
 target = alias[target] || target;
 
