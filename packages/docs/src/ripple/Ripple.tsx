@@ -1,6 +1,16 @@
 import React, { forwardRef } from 'react';
 import { useRipple } from './useRipple';
 
+const rippleStyle: React.CSSProperties = {
+  position: "relative",
+  overflow: "hidden",
+  transform: "translateZ(0)",
+};
+const rippleUnboundedStyle: React.CSSProperties = {
+  overflow: "visible",
+};
+
+
 type RippleProps = React.HTMLAttributes<HTMLDivElement> & {
   color?: string;
   centered?: boolean;
@@ -47,8 +57,11 @@ export const Ripple = forwardRef<HTMLDivElement, RippleProps>((props, ref) => {
           ref.current = node;
         }
       }}
-      className={`mat-ripple ${unbounded ? 'mat-ripple-unbounded' : ''}`}
-      style={{ position: 'relative', overflow: 'hidden', ...rest.style }}
+      style={{ 
+        ...rippleStyle, 
+        ...rest.style,
+        ...(unbounded && rippleUnboundedStyle),
+      }}
     >
       {children}
     </div>

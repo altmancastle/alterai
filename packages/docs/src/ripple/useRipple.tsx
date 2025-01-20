@@ -64,7 +64,11 @@ export function useRipple<T extends HTMLElement>(config: RippleConfig = {}) {
     const offsetY = y - containerRect.top;
 
     const rippleElement = document.createElement('div');
-    rippleElement.classList.add('mat-ripple-element');
+    rippleElement.style.position = "absolute";
+    rippleElement.style.borderRadius = "50%";
+    rippleElement.style.pointerEvents = "none";
+    rippleElement.style.transition = "opacity, transform 0ms cubic-bezier(0, 0, 0.2, 1)";
+    rippleElement.style.transform = "scale(0)";
     rippleElement.style.left = `${offsetX - radius}px`;
     rippleElement.style.top = `${offsetY - radius}px`;
     rippleElement.style.width = `${radius * 2}px`;
