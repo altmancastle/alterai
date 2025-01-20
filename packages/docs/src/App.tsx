@@ -43,6 +43,7 @@ function App() {
         <Ripple 
           color="rgba(0,0,0,.2)"
           centered
+          unbounded
           style={{
             padding: '20px',
             border: '1px solid #ccc',
