@@ -34,7 +34,7 @@ function distanceToFurthestCorner(x: number, y: number, rect: DOMRect) {
 }
 
 
-export function useRipple<T extends HTMLElement>(config: RippleConfig = {}) {
+export function useRipple<T extends HTMLElement | SVGSVGElement>(config: RippleConfig = {}) {
   const containerRef = useRef<T>(null);
   const [ripples, setRipples] = useState<RippleRef[]>([]);
   const isPointerDown = useRef(false);

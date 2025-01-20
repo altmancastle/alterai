@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, JSX } from 'react';
 import { useRipple } from './useRipple';
 
 const rippleStyle: React.CSSProperties = {
@@ -10,8 +10,8 @@ const rippleUnboundedStyle: React.CSSProperties = {
   overflow: "visible",
 };
 
-
-type RippleProps = React.HTMLAttributes<HTMLDivElement> & {
+type RippleProps<T extends keyof JSX.IntrinsicElements> = Omit<JSX.IntrinsicElements[T], keyof React.HTMLAttributes<HTMLElement>> & React.HTMLAttributes<HTMLElement> & {
+  as?: T;
   color?: string;
   centered?: boolean;
   radius?: number;
@@ -24,8 +24,9 @@ type RippleProps = React.HTMLAttributes<HTMLDivElement> & {
   terminateOnPointerUp?: boolean;
 };
 
-export const Ripple = forwardRef<HTMLDivElement, RippleProps>((props, ref) => {
+export const Ripple = forwardRef<HTMLElement | SVGSVGElement, RippleProps<keyof JSX.IntrinsicElements>>((props, ref) => {
   const {
+    as: Component = 'div',
     color,
     centered,
     radius,
@@ -37,7 +38,7 @@ export const Ripple = forwardRef<HTMLDivElement, RippleProps>((props, ref) => {
     ...rest
   } = props;
 
-  const { containerRef } = useRipple({
+  const { containerRef } = useRipple<HTMLElement | SVGSVGElement>({
     color,
     centered,
     radius,
@@ -46,24 +47,23 @@ export const Ripple = forwardRef<HTMLDivElement, RippleProps>((props, ref) => {
     disabled
   });
 
-  return (
-    <div
-      {...rest}
-      ref={(node) => {
-        containerRef.current = node;
-        if (typeof ref === 'function') {
-          ref(node);
-        } else if (ref) {
-          ref.current = node;
-        }
-      }}
-      style={{ 
-        ...rippleStyle, 
-        ...rest.style,
-        ...(unbounded && rippleUnboundedStyle),
-      }}
-    >
-      {children}
-    </div>
-  );
+  const componentProps = {
+    ...rest,
+    ref: (node: HTMLElement | SVGSVGElement | null) => {
+      containerRef.current = node;
+      if (typeof ref === 'function') {
+        ref(node);
+      } else if (ref) {
+        (ref as React.RefObject<HTMLElement | SVGSVGElement | null>).current = node;
+      }
+    },
+    style: { 
+      ...rippleStyle, 
+      ...rest.style,
+      ...(unbounded && rippleUnboundedStyle),
+    },
+    children
+  };
+
+  return React.createElement(Component, componentProps);
 });
