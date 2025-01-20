@@ -16,6 +16,15 @@
       "require": "./dist/ripple.umd.js"
     }
   },
+  "keywords": [
+    "ripple",
+    "ripple hooks",
+    "useRipple",
+    "react ripple hook",
+    "angular ripple"
+  ],
+  "license": "MIT",
+  "homepage": "",
   "scripts": {
     "dev": "NODE_ENV=development vite",
     "build": "tsc -b && vite build",
