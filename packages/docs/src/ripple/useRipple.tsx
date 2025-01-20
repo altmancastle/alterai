@@ -27,6 +27,13 @@ const defaultRippleAnimationConfig = {
   exitDuration: 150,
 };
 
+function distanceToFurthestCorner(x: number, y: number, rect: DOMRect) {
+  const distX = Math.max(Math.abs(x - rect.left), Math.abs(x - rect.right));
+  const distY = Math.max(Math.abs(y - rect.top), Math.abs(y - rect.bottom));
+  return Math.sqrt(distX * distX + distY * distY);
+}
+
+
 export function useRipple<T extends HTMLElement>(config: RippleConfig = {}) {
   const containerRef = useRef<T>(null);
   const [ripples, setRipples] = useState<RippleRef[]>([]);
@@ -51,8 +58,7 @@ export function useRipple<T extends HTMLElement>(config: RippleConfig = {}) {
       y = containerRect.top + containerRect.height / 2;
     }
 
-    const radius = mergedConfig.radius ||
-      Math.sqrt(Math.pow(containerRect.width, 2) + Math.pow(containerRect.height, 2)) / 2;
+    const radius = mergedConfig.radius || distanceToFurthestCorner(x, y, containerRect);
     
     const offsetX = x - containerRect.left;
     const offsetY = y - containerRect.top;
