@@ -1,0 +1,160 @@
+import { useRef, useState, useEffect, useCallback } from 'react';
+
+type RippleConfig = {
+  color?: string;
+  centered?: boolean;
+  radius?: number;
+  persistent?: boolean;
+  disabled?: boolean;
+  animation?: {
+    enterDuration?: number;
+    exitDuration?: number;
+  };
+  terminateOnPointerUp?: boolean;
+};
+
+type RippleState = 'FADING_IN' | 'VISIBLE' | 'FADING_OUT' | 'HIDDEN';
+
+type RippleRef = {
+  element: HTMLElement;
+  config: RippleConfig;
+  state: RippleState;
+  fadeOut: () => void;
+};
+
+const defaultRippleAnimationConfig = {
+  enterDuration: 225,
+  exitDuration: 150,
+};
+
+export function useRipple<T extends HTMLElement>(config: RippleConfig = {}) {
+  const containerRef = useRef<T>(null);
+  const [ripples, setRipples] = useState<RippleRef[]>([]);
+  const isPointerDown = useRef(false);
+  const lastTouchStart = useRef(0);
+  const ignoreMouseTimeout = 800;
+
+  const fadeOutRipple = useCallback((ripple: RippleRef) => {
+    setRipples(prev => prev.filter(r => r !== ripple));
+    ripple.element.remove();
+  }, []);
+
+  const createRipple = useCallback((x: number, y: number, rippleConfig: RippleConfig = {}) => {
+    if (!containerRef.current || rippleConfig.disabled) return null;
+
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const mergedConfig = { ...config, ...rippleConfig };
+    const animationConfig = { ...defaultRippleAnimationConfig, ...mergedConfig.animation };
+
+    if (mergedConfig.centered) {
+      x = containerRect.left + containerRect.width / 2;
+      y = containerRect.top + containerRect.height / 2;
+    }
+
+    const radius = mergedConfig.radius ||
+      Math.sqrt(Math.pow(containerRect.width, 2) + Math.pow(containerRect.height, 2)) / 2;
+    
+    const offsetX = x - containerRect.left;
+    const offsetY = y - containerRect.top;
+
+    const rippleElement = document.createElement('div');
+    rippleElement.classList.add('mat-ripple-element');
+    rippleElement.style.left = `${offsetX - radius}px`;
+    rippleElement.style.top = `${offsetY - radius}px`;
+    rippleElement.style.width = `${radius * 2}px`;
+    rippleElement.style.height = `${radius * 2}px`;
+    rippleElement.style.transitionDuration = `${animationConfig.enterDuration}ms`;
+
+    if (mergedConfig.color) {
+      rippleElement.style.backgroundColor = mergedConfig.color;
+    }
+
+    containerRef.current.appendChild(rippleElement);
+    // Force style recalculation
+    window.getComputedStyle(rippleElement).getPropertyValue('opacity');
+    rippleElement.style.transform = 'scale(1)';
+
+    const rippleRef: RippleRef = {
+      element: rippleElement,
+      config: mergedConfig,
+      state: 'FADING_IN',
+      fadeOut: () => {
+        rippleRef.state = 'FADING_OUT';
+        rippleElement.style.transitionDuration = `${animationConfig.exitDuration}ms`;
+        rippleElement.style.opacity = '0';
+        setTimeout(() => fadeOutRipple(rippleRef), animationConfig.exitDuration);
+      }
+    };
+
+    setRipples(prev => [...prev, rippleRef]);
+
+    setTimeout(() => {
+      rippleRef.state = 'VISIBLE';
+      if (!mergedConfig.persistent && (!isPointerDown.current || mergedConfig.terminateOnPointerUp)) {
+        rippleRef.fadeOut();
+      }
+    }, animationConfig.enterDuration);
+
+    return rippleRef;
+  }, [config, fadeOutRipple]);
+
+  const handlePointerDown = useCallback((event: Event) => {
+    if (event instanceof TouchEvent) {
+      lastTouchStart.current = Date.now();
+    } else if (Date.now() - lastTouchStart.current < ignoreMouseTimeout) {
+      return;
+    }
+    isPointerDown.current = true;
+    if(event instanceof MouseEvent) {
+      const clientX = event.clientX;
+      const clientY = event.clientY;
+      createRipple(clientX, clientY);
+    } else if(event instanceof TouchEvent) {
+      const clientX = event.touches[0].clientX;
+      const clientY = event.touches[0].clientY;
+      createRipple(clientX, clientY);
+    }
+  }, [createRipple]);
+
+  const handlePointerUp = useCallback(() => {
+    isPointerDown.current = false;
+    ripples.forEach(ripple => {
+      if (!ripple.config.persistent && 
+          (ripple.state === 'VISIBLE' || 
+           (ripple.config.terminateOnPointerUp && ripple.state === 'FADING_IN'))) {
+        ripple.fadeOut();
+      }
+    });
+  }, [ripples]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const events = ['mousedown', 'touchstart'];
+    events.forEach(event => container.addEventListener(event, handlePointerDown));
+
+    return () => {
+      events.forEach(event => container.removeEventListener(event, handlePointerDown));
+    };
+  }, [handlePointerDown]);
+
+  useEffect(() => {
+    const events = ['mouseup', 'mouseleave', 'touchend', 'touchcancel'];
+    events.forEach(event => window.addEventListener(event, handlePointerUp));
+
+    return () => {
+      events.forEach(event => window.removeEventListener(event, handlePointerUp));
+    };
+  }, [handlePointerUp]);
+
+  return {
+    containerRef,
+    launch: (x: number, y: number, config?: RippleConfig) => createRipple(x, y, config),
+    fadeOutAll: () => ripples.forEach(ripple => ripple.fadeOut()),
+    fadeOutAllNonPersistent: () => 
+      ripples.forEach(ripple => {
+        if (!ripple.config.persistent) ripple.fadeOut();
+      })
+  };
+}

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 
 export const enum RippleState {
   FADING_IN,
@@ -93,6 +93,7 @@ export function useRipple<T extends HTMLElement>(target: RippleTarget) {
     rippleElement.style.top = `${y - radius}px`;
     rippleElement.style.borderRadius = '50%';
     rippleElement.style.pointerEvents = "none";
+    rippleElement.style.opacity = "0.5";
     rippleElement.style.transform = 'scale(0)';
     rippleElement.style.transition = `opacity, transform 0ms cubic-bezier(0, 0, 0.2, 1)`;
     rippleElement.style.transitionDuration = `${target.rippleConfig.animation?.enterDuration || defaultRippleAnimationConfig.enterDuration}ms`;
