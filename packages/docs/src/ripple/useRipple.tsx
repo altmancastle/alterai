@@ -16,7 +16,7 @@ type RippleConfig = {
 type RippleState = 'FADING_IN' | 'VISIBLE' | 'FADING_OUT' | 'HIDDEN';
 
 type RippleRef = {
-  element: HTMLElement | SVGElement;
+  element: HTMLElement | SVGCircleElement;
   config: RippleConfig;
   state: RippleState;
   fadeOut: () => void;
@@ -33,7 +33,7 @@ function distanceToFurthestCorner(x: number, y: number, rect: DOMRect) {
   return Math.sqrt(distX * distX + distY * distY);
 }
 
-export function useRipple<T extends HTMLElement | SVGElement>(config: RippleConfig = {}) {
+export function useRipple<T extends HTMLElement | SVGSVGElement>(config: RippleConfig = {}) {
   const containerRef = useRef<T>(null);
   const [ripples, setRipples] = useState<RippleRef[]>([]);
   const isPointerDown = useRef(false);
@@ -64,9 +64,9 @@ export function useRipple<T extends HTMLElement | SVGElement>(config: RippleConf
 
     const container = containerRef.current;
 
-    const rippleElement = container instanceof SVGElement ? document.createElementNS('http://www.w3.org/2000/svg', 'circle') : document.createElement('div');
+    const rippleElement = container instanceof SVGSVGElement ? document.createElementNS('http://www.w3.org/2000/svg', 'circle') : document.createElement('div');
 
-    if (container instanceof SVGElement) {
+    if (container instanceof SVGSVGElement) {
       rippleElement.setAttribute('cx', `${offsetX}`);
       rippleElement.setAttribute('cy', `${offsetY}`);
       rippleElement.setAttribute('r', '0');
@@ -93,14 +93,10 @@ export function useRipple<T extends HTMLElement | SVGElement>(config: RippleConf
   
     rippleElement.style.transitionDuration = `${animationConfig.enterDuration}ms`;
 
-    if (container instanceof SVGElement && !(container instanceof SVGSVGElement)) {
-      container.parentElement?.appendChild(rippleElement);
-    } else {
-      containerRef.current.appendChild(rippleElement);
-    }
+    containerRef.current.appendChild(rippleElement);
     window.getComputedStyle(rippleElement).getPropertyValue('opacity');
 
-    if (container instanceof SVGElement) {
+    if (container instanceof SVGSVGElement) {
       rippleElement.setAttribute('r', `${radius}`);
     } else {
     rippleElement.style.transform = 'scale(1)';
