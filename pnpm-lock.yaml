@@ -15,7 +15,7 @@ importers:
         specifier: ^8.1.9
         version: 8.1.9(@swc/core@1.10.7(@swc/helpers@0.5.15))(encoding@0.1.13)
 
-  packages/alter-ui:
+  packages/alterai:
     dependencies:
       react:
         specifier: ^19.0.0
@@ -78,9 +78,9 @@ importers:
 
   packages/docs:
     dependencies:
-      alter-ui:
+      '@alterai/ripple':
         specifier: workspace:*
-        version: link:../alter-ui
+        version: link:../ripple
       react:
         specifier: ^19.0.0
         version: 19.0.0
