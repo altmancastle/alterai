@@ -4,11 +4,10 @@ let target = process.argv[2];
 
 console.log(process.argv);
 
-
 const alias = {
-  docs: 'docs',
-  dev: 'alter-ui',
-  ripple: 'ripple',
+  docs: '@alterai/docs',
+  dev: 'alterai',
+  ripple: '@alterai/ripple',
 };
 target = alias[target] || target;
 
