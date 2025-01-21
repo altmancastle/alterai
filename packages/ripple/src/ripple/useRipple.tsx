@@ -99,7 +99,7 @@ export function useRipple<T extends HTMLElement | SVGSVGElement>(config: RippleC
     if (container instanceof SVGSVGElement) {
       rippleElement.setAttribute('r', `${radius}`);
     } else {
-    rippleElement.style.transform = 'scale(1)';
+      rippleElement.style.transform = 'scale(1)';
     }
 
     const rippleRef: RippleRef = {
