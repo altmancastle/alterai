@@ -1,5 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 
+export type ElementType<T = HTMLDivElement> = T extends HTMLElement ? T : T extends SVGSVGElement ? T : HTMLDivElement;
+
 type RippleConfig = {
   color?: string;
   centered?: boolean;
@@ -33,10 +35,10 @@ function distanceToFurthestCorner(x: number, y: number, rect: DOMRect) {
   return Math.sqrt(distX * distX + distY * distY);
 }
 
-export function useRipple<T extends HTMLElement | SVGSVGElement>(
+export function useRipple<T = HTMLDivElement>(
   config: RippleConfig = {}
 ) {
-  const containerRef = useRef<T>(null);
+  const containerRef = useRef<ElementType<T>>(null);
   const [ripples, setRipples] = useState<RippleRef[]>([]);
   const isPointerDown = useRef(false);
   const lastTouchStart = useRef(0);

@@ -2,7 +2,7 @@ import './App.css';
 import { useRipple, Ripple } from '@alterai/ripple';
 
 function App() {
-  const ripple = useRipple<HTMLDivElement>({
+  const ripple = useRipple({
     color: "rgba(0,0,0, .1)",
     centered: false,
     animation: {
