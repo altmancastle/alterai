@@ -93,40 +93,40 @@ export default MyButton;
 ### Centered Ripple
 
 ```jsx
-<Ripple color="rgba(0, 0, 0, 0.1)" centered>
-  <button>Centered Ripple</button>
+<Ripple as="button" color="rgba(0, 0, 0, 0.1)" centered>
+  Centered Ripple
 </Ripple>
 ```
 
 ### Custom Radius Ripple
 
 ```jsx
-<Ripple color="rgba(0, 0, 0, 0.1)" radius={50}>
-  <button>Custom Radius Ripple</button>
+<Ripple as="button" color="rgba(0, 0, 0, 0.1)" radius={50}>
+  Custom Radius Ripple
 </Ripple>
 ```
 
 ### Persistent Ripple
 
 ```jsx
-<Ripple color="rgba(0, 0, 0, 0.1)" persistent>
-  <button>Persistent Ripple</button>
+<Ripple as="button" color="rgba(0, 0, 0, 0.1)" persistent>
+  Persistent Ripple
 </Ripple>
 ```
 
 ### Unbounded Ripple
 
 ```jsx
-<Ripple color="rgba(0, 0, 0, 0.1)" unbounded>
-  <button>Unbounded Ripple</button>
+<Ripple as="button" color="rgba(0, 0, 0, 0.1)" unbounded>
+  Unbounded Ripple
 </Ripple>
 ```
 
 ### Custom Animation Duration
 
 ```jsx
-<Ripple color="rgba(0, 0, 0, 0.1)" animation={{ enterDuration: 500, exitDuration: 300 }}>
-  <button>Custom Animation Duration</button>
+<Ripple as="button" color="rgba(0, 0, 0, 0.1)" animation={{ enterDuration: 500, exitDuration: 300 }}>
+  Custom Animation Duration
 </Ripple>
 ```
 

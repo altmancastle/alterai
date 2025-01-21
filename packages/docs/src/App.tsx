@@ -2,7 +2,7 @@ import './App.css';
 import { useRipple, Ripple } from '@alterai/ripple';
 
 function App() {
-  const ripple = useRipple<HTMLButtonElement>({
+  const ripple = useRipple<HTMLDivElement>({
     color: "rgba(0,0,0, .1)",
     centered: false,
     animation: {
@@ -30,7 +30,7 @@ function App() {
       
       <div style={{ margin: '20px 0' }}>
         <h2>useRipple Hook Example</h2>
-        {/* <div 
+        <div 
           style={{ 
             padding: '20px', 
             border: '1px solid #ccc',
@@ -43,7 +43,7 @@ function App() {
           ref={ripple.containerRef}
         >
           Click me (useRipple)
-        </div> */}
+        </div>
       </div>
 
       <div style={{ margin: '20px 0' }}>
@@ -63,19 +63,6 @@ function App() {
           Click me (Ripple)
         </Ripple>
       </div>
-
-      <div>
-         <button style={{ 
-            position: "relative",
-            overflow: "hidden",
-            padding: '10px 20px',
-            border: '1px solid #ccc',
-            }}>
-          Click me (Ripple)
-          <span ref={ripple.containerRef} style={{ position: "absolute", top: 0, left: 0, bottom: 0, right: 0 }}></span>
-         </button>
-      </div>
-
     </div>
   )
 }
