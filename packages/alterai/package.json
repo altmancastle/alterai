@@ -1,5 +1,5 @@
 {
-  "name": "alter-ui",
+  "name": "alterai",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,13 +7,13 @@
     "dist"
   ],
   "types": "./dist/types/index.d.ts",
-  "main": "./dist/alter-ui.umd.js",
-  "module": "./dist/alter-ui.es.js",
+  "main": "./dist/alterai.umd.js",
+  "module": "./dist/alterai.es.js",
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
-      "import": "./dist/alter-ui.es.js",
-      "require": "./dist/alter-ui.umd.js"
+      "import": "./dist/alterai.es.js",
+      "require": "./dist/alterai.umd.js"
     }
   },
   "scripts": {

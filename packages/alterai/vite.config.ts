@@ -15,8 +15,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, "src/index.ts"),
-      name: "alter-ui",
-      fileName: (format) => `alter-ui.${format}.js`,
+      name: "alterai",
+      fileName: (format) => `alterai.${format}.js`,
     },
     rollupOptions: {
       external: ["react", "react-dom"],
