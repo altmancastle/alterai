@@ -23,7 +23,7 @@ The `Ripple` component and `useRipple` hook are used to create a material design
 
 ```jsx
 import React from 'react';
-import { Ripple } from '@alter-ui/ripple';
+import { Ripple } from '@alterai/ripple';
 
 function MyButton() {
   return (
@@ -66,7 +66,7 @@ export default MyButton;
 
 ```jsx
 import React, { useRef } from 'react';
-import { useRipple } from '@alter-ui/ripple';
+import { useRipple } from '@alterai/ripple';
 
 function MyButton() {
   const { containerRef, launch } = useRipple({ color: 'rgba(0, 0, 0, 0.1)', centered: true });
