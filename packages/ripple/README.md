@@ -1,5 +1,7 @@
 # Ripple Component and useRipple Hook Documentation
 
+    This package is compatible with React 19 and above. It leverages the latest features and improvements in React 19 to provide a smooth and efficient ripple effect. Make sure to have React 19 or later installed in your project to use this package. 
+  
 ## Overview
 
 The `Ripple` component and `useRipple` hook are used to create a material design ripple effect, which is a visual feedback mechanism for user interactions. The ripple effect is commonly used in buttons, cards, and other interactive elements.
@@ -27,8 +29,8 @@ import { Ripple } from '@alterai/ripple';
 
 function MyButton() {
   return (
-    <Ripple color="rgba(0, 0, 0, 0.1)" centered>
-      <button>Click Me</button>
+    <Ripple color="rgba(0, 0, 0, 0.1)" centered style={{ padding: '10px 20px', borderRadius: '5px', backgroundColor: '#007bff', color: '#fff', border: 'none', cursor: 'pointer' }}>
+        Click Me
     </Ripple>
   );
 }
@@ -69,17 +71,10 @@ import React, { useRef } from 'react';
 import { useRipple } from '@alterai/ripple';
 
 function MyButton() {
-  const { containerRef, launch } = useRipple({ color: 'rgba(0, 0, 0, 0.1)', centered: true });
-
-  const handleClick = (event) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    launch(x, y);
-  };
+  const { containerRef } = useRipple({ color: 'rgba(0, 0, 0, 0.1)', centered: true });
 
   return (
-    <button ref={containerRef} onClick={handleClick}>
+    <button ref={containerRef} style={{ padding: '10px 20px', borderRadius: '5px', backgroundColor: '#007bff', color: '#fff', border: 'none', cursor: 'pointer' }}>
       Click Me
     </button>
   );
@@ -93,41 +88,67 @@ export default MyButton;
 ### Centered Ripple
 
 ```jsx
-<Ripple as="button" color="rgba(0, 0, 0, 0.1)" centered>
-  Centered Ripple
+<Ripple as="button" color="rgba(0, 0, 0, 0.1)" centered style={{ padding: '10px 20px', borderRadius: '5px', backgroundColor: '#007bff', color: '#fff', border: 'none', cursor: 'pointer' }}>
+    Centered Ripple
 </Ripple>
 ```
 
 ### Custom Radius Ripple
 
 ```jsx
-<Ripple as="button" color="rgba(0, 0, 0, 0.1)" radius={50}>
-  Custom Radius Ripple
+<Ripple as="button" color="rgba(0, 0, 0, 0.1)" radius={50} style={{ padding: '10px 20px', borderRadius: '5px', backgroundColor: '#007bff', color: '#fff', border: 'none', cursor: 'pointer' }}>
+    Custom Radius Ripple
 </Ripple>
 ```
 
 ### Persistent Ripple
 
 ```jsx
-<Ripple as="button" color="rgba(0, 0, 0, 0.1)" persistent>
-  Persistent Ripple
+<Ripple as="button" color="rgba(0, 0, 0, 0.1)" persistent style={{ padding: '10px 20px', borderRadius: '5px', backgroundColor: '#007bff', color: '#fff', border: 'none', cursor: 'pointer' }}>
+    Persistent Ripple
 </Ripple>
 ```
 
 ### Unbounded Ripple
 
 ```jsx
-<Ripple as="button" color="rgba(0, 0, 0, 0.1)" unbounded>
-  Unbounded Ripple
+<Ripple as="button" color="rgba(0, 0, 0, 0.1)" unbounded style={{ padding: '10px 20px', borderRadius: '5px', backgroundColor: '#007bff', color: '#fff', border: 'none', cursor: 'pointer' }}>
+    Unbounded Ripple
 </Ripple>
 ```
 
 ### Custom Animation Duration
 
 ```jsx
-<Ripple as="button" color="rgba(0, 0, 0, 0.1)" animation={{ enterDuration: 500, exitDuration: 300 }}>
+<Ripple as="button" color="rgba(0, 0, 0, 0.1)" animation={{ enterDuration: 500, exitDuration: 300 }} style={{ padding: '10px 20px', borderRadius: '5px', backgroundColor: '#007bff', color: '#fff', border: 'none', cursor: 'pointer' }}>
   Custom Animation Duration
 </Ripple>
+```
+
+### Manual Ripple Trigger with `launch`
+
+```jsx
+import React, { useRef } from 'react';
+import { useRipple } from '@alterai/ripple';
+
+function MyCustomComponent() {
+  const { containerRef, launch } = useRipple({ color: 'rgba(0, 0, 0, 0.1)' });
+
+  const handleClick = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    launch(x, y);
+  };
+
+  return (
+    <div ref={containerRef} onClick={handleClick} style={{ padding: '20px', borderRadius: '10px', backgroundColor: '#f8f9fa', border: '1px solid #ddd', cursor: 'pointer', textAlign: 'center' }}>
+      Click anywhere in this box
+    </div>
+  );
+}
+
+export default MyCustomComponent;
 ```
 
 ## Notes
@@ -135,3 +156,4 @@ export default MyButton;
 - The `Ripple` component is a wrapper that automatically handles the ripple effect for its children.
 - The `useRipple` hook provides more control and can be used in custom components where the `Ripple` component might not be suitable.
 - The ripple effect is designed to work with both HTML elements and SVG elements.
+
