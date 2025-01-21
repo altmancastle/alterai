@@ -65,15 +65,16 @@ function App() {
       </div>
 
       <div>
-         <button ref={ripple.containerRef} style={{ 
+         <button style={{ 
             position: "relative",
             overflow: "hidden",
-            padding: '20px',
+            padding: '10px 20px',
+            border: '1px solid #ccc',
             }}>
           Click me (Ripple)
+          <span ref={ripple.containerRef} style={{ position: "absolute", top: 0, left: 0, bottom: 0, right: 0 }}></span>
          </button>
       </div>
-
 
     </div>
   )
