@@ -1,9 +1,6 @@
 const spawn = require('cross-spawn');
 
 let target = process.argv[2];
-
-console.log(process.argv);
-
 const alias = {
   docs: '@alterai/docs',
   dev: 'alterai',
