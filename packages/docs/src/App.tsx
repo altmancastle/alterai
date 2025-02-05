@@ -30,7 +30,7 @@ function App() {
       
       <div style={{ margin: '20px 0' }}>
         <h2>useRipple Hook Example</h2>
-        <div 
+        <div
           style={{ 
             padding: '20px', 
             border: '1px solid #ccc',
