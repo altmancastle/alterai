@@ -1,50 +1,210 @@
-# React + TypeScript + Vite
+一、核心功能模块
+AI 模型管理：
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+查看模型列表
 
-Currently, two official plugins are available:
+上传/删除模型
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+模型训练状态监控
 
-## Expanding the ESLint configuration
+数据分析与可视化：
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+实时数据展示（图表、表格）
 
-- Configure the top-level `parserOptions` property like this:
+数据过滤与搜索
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+数据导出功能
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+AI 交互界面：
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+输入框与 AI 对话
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+历史对话记录
+
+对话结果分析
+
+系统配置：
+
+用户权限管理
+
+API 密钥管理
+
+系统日志查看
+
+通知与帮助：
+
+系统通知中心
+
+帮助文档与支持
+
+二、页面设计与路由规划
+
+1. 登录页
+   路由：/login
+
+功能：
+
+用户登录
+
+忘记密码
+
+注册新用户（可选）
+
+UI 设计：
+
+简洁的表单布局
+
+背景使用科技感渐变或 AI 相关插图
+
+支持暗黑模式
+
+2. 主 Dashboard 页
+   路由：/dashboard
+
+功能：
+
+显示核心指标（如模型数量、训练状态、API 调用次数）
+
+快捷入口（如模型管理、数据分析、AI 交互）
+
+UI 设计：
+
+顶部导航栏（用户头像、通知中心、暗黑模式切换）
+
+侧边栏（菜单导航）
+
+卡片式布局展示核心指标
+
+使用动态图表（如折线图、柱状图）展示数据趋势
+
+3. AI 模型管理页
+   路由：/models
+
+子路由：
+
+模型列表：/models/list
+
+模型详情：/models/:id
+
+上传模型：/models/upload
+
+功能：
+
+查看模型列表（名称、版本、状态）
+
+查看模型详情（训练数据、性能指标）
+
+上传新模型
+
+删除模型
+
+UI 设计：
+
+表格展示模型列表（支持排序、筛选）
+
+模型详情页使用卡片布局展示详细信息
+
+上传页面提供拖拽上传功能
+
+4. 数据分析页
+   路由：/analytics
+
+子路由：
+
+数据概览：/analytics/overview
+
+数据详情：/analytics/:id
+
+功能：
+
+查看实时数据（图表、表格）
+
+数据过滤与搜索
+
+导出数据（CSV、PDF）
+
+UI 设计：
+
+使用 ECharts 或 Chart.js 展示动态图表
+
+提供日期选择器、筛选条件输入框
+
+导出按钮放置在页面右上角
+
+5. AI 交互页
+   路由：/chat
+
+功能：
+
+输入问题并与 AI 交互
+
+查看历史对话记录
+
+分析对话结果（如情感分析、关键词提取）
+
+UI 设计：
+
+左侧为对话记录列表
+
+右侧为对话界面（输入框 + 对话气泡）
+
+支持 Markdown 渲染（如代码块、表格）
+
+提供对话结果分析卡片（如情感分析结果）
+
+6. 系统配置页
+   路由：/settings
+
+子路由：
+
+用户管理：/settings/users
+
+API 密钥管理：/settings/api-keys
+
+系统日志：/settings/logs
+
+功能：
+
+管理用户权限（添加、删除、编辑）
+
+生成和管理 API 密钥
+
+查看系统日志
+
+UI 设计：
+
+使用表格展示用户和 API 密钥列表
+
+提供操作按钮（如编辑、删除）
+
+系统日志页面支持分页和搜索
+
+7. 通知中心
+   路由：/notifications
+
+功能：
+
+查看系统通知（如模型训练完成、API 调用失败）
+
+标记已读/删除通知
+
+UI 设计：
+
+列表展示通知（时间、内容、状态）
+
+提供批量操作按钮（如标记已读、删除）
+
+8. 帮助与支持页
+   路由：/help
+
+功能：
+
+查看帮助文档
+
+提交支持请求
+
+UI 设计：
+
+使用折叠面板展示常见问题
+
+提供表单提交支持请求
