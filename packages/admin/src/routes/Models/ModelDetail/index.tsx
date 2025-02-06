@@ -1,8 +1,7 @@
-const ModelList = () => {
+const ModelDetail = () => {
   return <div>
-    this is ModelList
+    this is ModelDetail
   </div>
 }
 
-
-export default ModelList;
+export default ModelDetail;

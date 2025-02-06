@@ -17,6 +17,8 @@ import Notifications from './routes/Notifications';
 import Help from './routes/Help';
 import AuthLayout from './core/layout/AuthLayout';
 import Register from './routes/Register';
+import HistoryChat from './routes/Chat/HistoryChat';
+import CollectChat from './routes/Chat/CollectChat';
 
 export const Router = () => {
   return (
@@ -40,7 +42,11 @@ export const Router = () => {
             <Route path=":id" element={<DataDetail />} />
           </Route>
 
-          <Route path="chat" element={<Chat />} />
+          <Route path="chat">
+            <Route index element={<Chat />} />
+            <Route path="history" element={<HistoryChat />} />
+            <Route path="collect" element={<CollectChat />} />
+          </Route>
 
           <Route path="settings">
             <Route index element={<Settings />} />
