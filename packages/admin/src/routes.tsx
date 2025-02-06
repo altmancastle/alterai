@@ -29,13 +29,16 @@ export const Router = () => {
         <Route path="notifications" element={<Notifications />} />
         <Route path="help" element={<Help />} />
         <Route element={<AuthLayout />}>
+        
           <Route index element={<Dashboard />} />
+
           <Route path="models">
             <Route index element={<Models />} />
             <Route path="list" element={<ModelList />} />
             <Route path="upload" element={<UploadModel />} />
             <Route path=":id" element={<ModelDetail />} />
           </Route>
+
           <Route path="analytics">
             <Route index element={<Analytics />} />
             <Route path="overview" element={<DataOverview />} />
