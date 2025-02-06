@@ -4,5 +4,4 @@ const ModelList = () => {
   </div>
 }
 
-
 export default ModelList;
