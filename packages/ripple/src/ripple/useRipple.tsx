@@ -16,7 +16,6 @@ type RippleConfig = {
 };
 
 type RippleState = "FADING_IN" | "VISIBLE" | "FADING_OUT" | "HIDDEN";
-
 type RippleRef = {
   element: HTMLElement | SVGCircleElement;
   config: RippleConfig;
