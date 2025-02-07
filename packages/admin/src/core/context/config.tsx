@@ -1,21 +1,21 @@
 import { createContext, useContext } from "react";
 import { AlterConfig, alterConfig } from "../config/config";
 
-const AlterConfigContext = createContext<AlterConfig | null>(null);
+const AlterAiConfigContext = createContext<AlterConfig>(alterConfig);
 
-const AlterConfigProvider = (props: { children: React.ReactElement}) => {
+const AlterAiConfigProvider = (props: { children: React.ReactElement}) => {
   return (
-    <AlterConfigContext.Provider value={alterConfig}>
+    <AlterAiConfigContext.Provider value={alterConfig}>
       {props.children}
-    </AlterConfigContext.Provider>
+    </AlterAiConfigContext.Provider>
   )
 }
 
-const useAlterConfig = () => {
-  return useContext(AlterConfigContext);
+const useAlterAiConfig = () => {
+  return useContext(AlterAiConfigContext);
 }
 
-export { AlterConfigProvider, useAlterConfig };
+export { AlterAiConfigProvider, useAlterAiConfig };
 
 
 

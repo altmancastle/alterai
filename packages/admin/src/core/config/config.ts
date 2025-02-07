@@ -16,6 +16,9 @@ export type TAlterConfig = {
   locale: string;
   debug: boolean;
   enableTransition: boolean;
+  aside: {
+    collapsed: boolean;
+  };
   features: {
     [key: string]: boolean;
   };
@@ -34,6 +37,9 @@ export const alterConfigInitial: TAlterConfig = {
     darkMode: true,
     multiLanguage: true,
     notification: true,
+  },
+  aside: {
+    collapsed: false,
   },
   layout: {
     direction: "ltr",
@@ -54,6 +60,11 @@ export class AlterConfig {
   setTheme(theme: Theme) {
     this.config = produce(this.config, (draft) => {
       draft.theme = theme;
+    });
+  }
+  toggleAsideCollapsed() {
+    this.config = produce(this.config, (draft) => {
+      draft.aside.collapsed = !draft.aside.collapsed;
     });
   }
   getLayout() {

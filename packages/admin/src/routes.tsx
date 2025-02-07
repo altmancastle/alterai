@@ -15,10 +15,11 @@ import ApiKeyManagement from './routes/Settings/ApiKeyManagement';
 import SystemLogs from './routes/Settings/SystemLogs';
 import Notifications from './routes/Notifications';
 import Help from './routes/Help';
-import AuthLayout from './core/layout/AuthLayout';
 import Register from './routes/Register';
 import HistoryChat from './routes/Chat/HistoryChat';
 import CollectChat from './routes/Chat/CollectChat';
+import AuthLayout from './core/layout/AuthLayout';
+import BaseLayout from './core/layout/BaseLayout';
 
 export const Router = () => {
   return (
@@ -28,11 +29,9 @@ export const Router = () => {
         <Route path="register" element={<Register />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="help" element={<Help />} />
-        <Route element={<AuthLayout />}>
-        
+        <Route element={<BaseLayout />}>
           <Route index element={<Dashboard />} />
-
-          <Route path="models">
+          <Route path="models" element={<AuthLayout />}>
             <Route index element={<Models />} />
             <Route path="list" element={<ModelList />} />
             <Route path="upload" element={<UploadModel />} />
@@ -51,7 +50,7 @@ export const Router = () => {
             <Route path="collect" element={<CollectChat />} />
           </Route>
 
-          <Route path="settings">
+          <Route path="settings" element={<AuthLayout />}>
             <Route index element={<Settings />} />
             <Route path="users" element={<UserManagement />} />
             <Route path="api-keys" element={<ApiKeyManagement />} />
