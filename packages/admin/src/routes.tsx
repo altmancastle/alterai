@@ -30,28 +30,28 @@ export const Router = () => {
         <Route path="notifications" element={<Notifications />} />
         <Route path="help" element={<Help />} />
         <Route element={<BaseLayout />}>
-          <Route index element={<Dashboard />} />
+          <Route path="index" index element={<Dashboard />} />
           <Route path="models" element={<AuthLayout />}>
-            <Route index element={<Models />} />
+            <Route path="index" index element={<Models />} />
             <Route path="list" element={<ModelList />} />
             <Route path="upload" element={<UploadModel />} />
             <Route path=":id" element={<ModelDetail />} />
           </Route>
 
           <Route path="analytics">
-            <Route index element={<Analytics />} />
+            <Route path="index" index element={<Analytics />} />
             <Route path="overview" element={<DataOverview />} />
             <Route path=":id" element={<DataDetail />} />
           </Route>
 
           <Route path="chat">
-            <Route index element={<Chat />} />
+            <Route path="index" index element={<Chat />} />
             <Route path="history" element={<HistoryChat />} />
             <Route path="collect" element={<CollectChat />} />
           </Route>
 
           <Route path="settings" element={<AuthLayout />}>
-            <Route index element={<Settings />} />
+            <Route path="index" index element={<Settings />} />
             <Route path="users" element={<UserManagement />} />
             <Route path="api-keys" element={<ApiKeyManagement />} />
             <Route path="logs" element={<SystemLogs />} />

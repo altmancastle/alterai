@@ -1,10 +1,10 @@
 
 
-const Login = () => {
+const Chat = () => {
   return <div>
-    this is dahsboard
+    this is Chat
   </div>
 }
 
 
-export default Login;
+export default Chat;
