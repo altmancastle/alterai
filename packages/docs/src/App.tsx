@@ -1,5 +1,6 @@
 import './App.css';
 import { useRipple, Ripple } from '@alterai/ripple';
+import { Button } from "@alterai/components";
 
 function App() {
   const ripple = useRipple({
@@ -23,6 +24,8 @@ function App() {
   return (
     <div className="App">
       <h1>Ripple Component Examples</h1>
+
+      <Button></Button>
 
       <svg ref={svgRipple.containerRef} width={300} height={300} style={{position: "relative"}}> 
         <rect width="100%" height="100%" fill="#f8f8f8"></rect>

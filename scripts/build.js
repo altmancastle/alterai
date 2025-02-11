@@ -5,6 +5,7 @@ const alias = {
   docs: '@alterai/docs',
   dev: 'alterai',
   ripple: '@alterai/ripple',
+  components: '@alterai/components',
 };
 target = alias[target] || target;
 
